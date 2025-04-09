@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>New Recipe</title>
+</head>
+<body>
+    <h2>Create a New Recipe</h2>
+    <form method="post">
+        Recipe Name: <input type="text" name="recipe_name" required><br>
+        Description: <textarea name="description"></textarea><br>
+        <input type="submit" value="Submit">
+    </form>
+    <a href="{{ url_for('routes.home') }}">Back to Home</a>
+</body>
+</html>
