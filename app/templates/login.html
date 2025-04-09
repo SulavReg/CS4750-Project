@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Home</title>
+</head>
+<body>
+    <h2>Welcome, {{ username }}!</h2>
+    <a href="{{ url_for('routes.new_recipe') }}">Add New Recipe</a><br>
+    <a href="{{ url_for('routes.logout') }}">Logout</a>
+</body>
+</html>
