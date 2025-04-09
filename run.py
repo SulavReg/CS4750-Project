@@ -1,13 +1,12 @@
+import os
 from flask import Flask
 from models import db, User, Recipe
 
 def create_app():
     app = Flask(__name__, template_folder="app/templates")
-    app.config['SQLALCHEMY_DATABASE_URI'] = (
-        'postgresql://group32:G1qlP1N4@bastion.cs.virginia.edu:5432/group32'
-    )
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('FLASK_SQLALCHEMY_DATABASE_URI')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.secret_key = "your-secret-key"
+    app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY')
 
     db.init_app(app)
 

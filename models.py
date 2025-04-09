@@ -14,9 +14,9 @@ class User(db.Model):
 
 class Recipe(db.Model):
     __tablename__ = 'recipes'
-    recipeID = db.Column(db.Integer, primary_key=True)
+    recipeid = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.Text, nullable=False)
     ingredients = db.Column(db.Text, nullable=False)
     instructions = db.Column(db.Text, nullable=False)
-    isPrivate = db.Column(db.Boolean, nullable=False)
+    isprivate = db.Column(db.Boolean, nullable=False)
     publisher = db.Column(db.Text, db.ForeignKey('users.username'))

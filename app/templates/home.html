@@ -1,14 +1,45 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Login</title>
+    <title>Home</title>
+    <style>
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .recipes {
+            margin-top: 20px;
+        }
+        .recipe-card {
+            border: 1px solid #ccc;
+            margin-bottom: 20px;
+            padding: 10px;
+        }
+    </style>
 </head>
 <body>
-    <h2>Login</h2>
-    <form method="post">
-        Username: <input type="text" name="username" required><br>
-        Password: <input type="password" name="password" required><br>
-        <input type="submit" value="Log in">
-    </form>
+    <div class="topbar">
+        <h2>Welcome, {{ username }}</h2>
+        <div>
+            <a href="{{ url_for('routes.new_recipe') }}">New Recipe</a> |
+            <a href="{{ url_for('routes.logout') }}">Logout</a>
+        </div>
+    </div>
+
+    <div class="recipes">
+        <h3>Recipes:</h3>
+        {% for recipe in recipes %}
+            <div class="recipe-card">
+                <h4>{{ recipe.title }}</h4>
+                <p><strong>Ingredients:</strong> {{ recipe.ingredients }}</p>
+                <p><strong>Instructions:</strong> {{ recipe.instructions }}</p>
+                <p><strong>Privacy:</strong> {% if recipe.isPrivate %} Private {% else %} Public {% endif %}</p>
+                <p><strong>Publisher:</strong> {{ recipe.publisher }}</p>
+            </div>
+        {% else %}
+            <p>No recipes available.</p>
+        {% endfor %}
+    </div>
 </body>
 </html>

@@ -29,7 +29,9 @@ def home():
     if "username" not in session:
         return redirect(url_for("routes.login"))
 
-    return render_template("home.html", username=session["username"])
+    recipes = Recipe.query.all()
+
+    return render_template("home.html", username=session["username"], recipes=recipes)
 
 
 # New recipe page
