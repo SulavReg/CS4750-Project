@@ -1,6 +1,7 @@
 from flask import Flask
 from models import db, User, Recipe
 
+
 def create_app():
     app = Flask(__name__, template_folder="app/templates")
     app.config['SQLALCHEMY_DATABASE_URI'] = (
@@ -15,6 +16,7 @@ def create_app():
     app.register_blueprint(routes)
 
     return app
+
 
 app = create_app()
 

@@ -3,6 +3,7 @@ from models import db, User, Recipe
 
 routes = Blueprint("routes", __name__)
 
+
 # Login route
 @routes.route("/", methods=["GET", "POST"])
 def login():
