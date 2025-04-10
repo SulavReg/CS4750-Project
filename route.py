@@ -3,11 +3,8 @@ from models import db, User, Recipe
 
 routes = Blueprint("routes", __name__)
 
-# your login, home, new_recipe, logout routes here
-
-
 # Login route
-@routes.route("/login", methods=["GET", "POST"])
+@routes.route("/", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
         username = request.form["username"]
@@ -28,8 +25,9 @@ def login():
 def home():
     if "username" not in session:
         return redirect(url_for("routes.login"))
+    recipes = Recipe.query.all()
 
-    return render_template("home.html", username=session["username"])
+    return render_template("home.html", username=session["username"], recipes=recipes)
 
 
 # New recipe page
@@ -40,13 +38,20 @@ def new_recipe():
 
     if request.method == "POST":
         recipe_name = request.form["recipe_name"]
-        description = request.form["description"]
-        # Insert into DB - assuming you have a Recipe model
+        ingredients = request.form["ingredients"]
+        instructions = request.form["instructions"]
+        is_private = False
 
-        # e.g.:
-        # new_recipe = Recipe(name=recipe_name, description=description, creator=session["username"])
-        # db.session.add(new_recipe)
-        # db.session.commit()
+        new = Recipe(
+            title=recipe_name,
+            ingredients=ingredients,
+            instructions=instructions,
+            isprivate=is_private,
+            publisher=session["username"]
+        )
+
+        db.session.add(new)
+        db.session.commit()
 
         return redirect(url_for("routes.home"))
 

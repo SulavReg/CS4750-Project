@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Home</title>
+    <title>Login</title>
 </head>
 <body>
-    <h2>Welcome, {{ username }}!</h2>
-    <a href="{{ url_for('routes.new_recipe') }}">Add New Recipe</a><br>
-    <a href="{{ url_for('routes.logout') }}">Logout</a>
+    <h2>Login</h2>
+    <form method="post">
+        Username: <input type="text" name="username" required><br>
+        Password: <input type="password" name="password" required><br>
+        <input type="submit" value="Log in">
+    </form>
 </body>
 </html>
