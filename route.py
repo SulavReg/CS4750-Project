@@ -27,22 +27,34 @@ def login():
 def signup():
     if request.method == "POST":
         username = request.form["username"]
+        first_name = request.form["first_name"]
+        last_name = request.form["last_name"]
         password = request.form["password"]
+        bio = request.form["bio"]
+        email = request.form["email"]
+        isadmin = False
 
+        # Check if username already exists
         existing_user = User.query.filter_by(username=username).first()
         if existing_user:
-            error_message = "Username already exists."
-            return render_template("login.html", error=error_message)
+            flash("Username already exists. Please choose a different username.")
+            return redirect(url_for("routes.signup"))
 
-        user = User(username=username, upassword=password)
-        db.session.add(user)
+        new_user = User(
+            username=username,
+            uname=f"{first_name} {last_name}",
+            upassword=password,
+            bio=bio,
+            email=email,
+            isadmin=isadmin
+        )
+
+        db.session.add(new_user)
         db.session.commit()
 
-        session["username"] = user.username
+        return redirect(url_for("routes.login"))
 
-        return redirect(url_for("routes.home"))
-
-    return render_template("login.html")
+    return render_template("signup.html")
 
 
 # Home page
