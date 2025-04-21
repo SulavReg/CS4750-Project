@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Your Cookbook</title>
+    <style>
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .cookbook {
+            margin-top: 20px;
+        }
+        .recipe-card {
+            border: 1px solid #ccc;
+            margin-bottom: 20px;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <h2>{{ session.username }}'s Cookbook</h2>
+        <div>
+            <a href="{{ url_for('routes.home') }}">Home</a> |
+            <a href="{{ url_for('routes.new_recipe') }}">New Recipe</a> |
+            <a href="{{ url_for('routes.logout') }}">Logout</a>
+        </div>
+    </div>
+
+    <div class="cookbook">
+        <h3>Your Recipes:</h3>
+        {% for recipe in recipes %}
+            <div class="recipe-card">
+                <h4><a href="{{ url_for('routes.view_recipe_from_cookbook', recipe_id=recipe.recipeid) }}">{{ recipe.title }}</a></h4>
+                <p><strong>Ingredients:</strong> {{ recipe.ingredients }}</p>
+                <p><strong>Instructions:</strong> {{ recipe.instructions }}</p>
+                <p><strong>Privacy:</strong> {% if recipe.isPrivate %} Private {% else %} Public {% endif %}</p>
+                <p><strong>Publisher:</strong> {{ recipe.publisher }}</p>
+
+                <form action="{{ url_for('routes.remove_from_cookbook', recipe_id=recipe.recipeid) }}" method="post" style="display:inline;">
+                    <button type="submit">Remove From Cookbook</button>
+                </form>
+            </div>
+        {% else %}
+            <p>No recipes in your cookbook yet.</p>
+        {% endfor %}
+    </div>
+</body>
+</html>

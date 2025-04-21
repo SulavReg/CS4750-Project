@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ recipe.title }}</title>
+</head>
+<body>
+    <h2>{{ recipe.title }}</h2>
+    <p><strong>Ingredients:</strong> {{ recipe.ingredients }}</p>
+    <p><strong>Instructions:</strong> {{ recipe.instructions }}</p>
+    <p><strong>Privacy:</strong> {% if recipe.isprivate %} Private {% else %} Public {% endif %}</p>
+    <p><strong>Publisher:</strong> {{ recipe.publisher }}</p>
+
+    <hr>
+
+    <h3>Comments:</h3>
+    {% if comments %}
+        <ul>
+        {% for comment in comments %}
+            <li><strong>{{ comment.username }}</strong>: {{ comment.contents }} ({{ comment.date_posted.strftime('%Y-%m-%d %H:%M') }})</li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No comments yet.</p>
+    {% endif %}
+
+    <a href="{{ url_for('routes.view_cookbook') }}">Back to Cookbook</a>
+</body>
+</html>

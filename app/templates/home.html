@@ -3,50 +3,187 @@
 <head>
     <title>Home</title>
     <style>
+        body {
+            font-family: 'Georgia', serif;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
         .topbar {
+            background-color: white;
+            color: #000080;
+            padding: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        .recipes {
-            margin-top: 20px;
+
+        .topbar h2 {
+            margin: 0;
+            font-size: 24px;
+            color: #000080;
         }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            color: #000080;
+            text-decoration: none;
+            font-weight: bold;
+            font-family: 'Georgia', serif;
+            font-size: 16px;
+        }
+
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        h3 {
+            border-bottom: 2px solid #000080;
+            padding-bottom: 5px;
+            color: #333;
+        }
+
         .recipe-card {
-            border: 1px solid #ccc;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
             margin-bottom: 20px;
-            padding: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .recipe-card h4 {
+            margin-top: 0;
+            color: #000080;
+        }
+
+        .recipe-card p {
+            margin: 5px 0;
+            color: #555;
+        }
+
+        .recipe-card form, .recipe-card a {
+            margin-right: 10px;
+        }
+
+        .recipe-actions {
+            margin-top: 10px;
+        }
+
+        button {
+            background-color: #000080;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            font-family: 'Georgia', serif;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #000066;
+        }
+
+        a.button-link {
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            background-color: #6c757d;
+            color: white;
+        }
+
+        a.button-link:hover {
+            background-color: #5a6268;
         }
     </style>
 </head>
 <body>
     <div class="topbar">
-        <h2>Welcome, {{ username }}</h2>
-        <div>
-            <a href="{{ url_for('routes.new_recipe') }}">New Recipe</a> |
+        <h2>Home</h2>
+        <div class="nav-links">
+            <a href="{{ url_for('routes.view_cookbook') }}">View Cookbook</a>
+            <a href="{{ url_for('routes.new_recipe') }}">New Recipe</a>
             <a href="{{ url_for('routes.logout') }}">Logout</a>
         </div>
     </div>
 
-    <div class="recipes">
-        <h3>Recipes:</h3>
-        {% for recipe in recipes %}
-            <div class="recipe-card">
-                <h4><a href="{{ url_for('routes.view_recipe', recipe_id=recipe.recipeid) }}">{{ recipe.title }}</a></h4>
-                <p><strong>Ingredients:</strong> {{ recipe.ingredients }}</p>
-                <p><strong>Instructions:</strong> {{ recipe.instructions }}</p>
-                <p><strong>Privacy:</strong> {% if recipe.isPrivate %} Private {% else %} Public {% endif %}</p>
-                <p><strong>Publisher:</strong> {{ recipe.publisher }}</p>
-
-                {% if recipe.publisher == username %}
-                    <form action="{{ url_for('routes.delete_recipe', recipe_id=recipe.recipeid) }}" method="post" style="display:inline;">
-                        <button type="submit">Delete</button>
-                    </form>
-                    <a href="{{ url_for('routes.edit_recipe', recipe_id=recipe.recipeid) }}">Edit</a>
-                {% endif %}
-            </div>
+    <div class="container">
+        <h3>Your Recipes</h3>
+        {% if user_recipes %}
+            {% for recipe in user_recipes %}
+                <div class="recipe-card">
+                    <h4><a href="{{ url_for('routes.view_recipe', recipe_id=recipe.recipeid) }}">{{ recipe.title }}</a></h4>
+                    <p><strong>Ingredients:</strong> {{ recipe.ingredients }}</p>
+                    <p><strong>Instructions:</strong> {{ recipe.instructions }}</p>
+                    <p><strong>Privacy:</strong> {% if recipe.isPrivate %}Private{% else %}Public{% endif %}</p>
+                    <div class="recipe-actions">
+                        <form action="{% if recipe.recipeid in cookbook_recipes %}
+                                {{ url_for('routes.remove_from_cookbook_homeview', recipe_id=recipe.recipeid) }}
+                            {% else %}
+                                {{ url_for('routes.add_to_cookbook', recipe_id=recipe.recipeid) }}
+                            {% endif %}" method="post" style="display:inline;">
+                            <button type="submit">
+                                {% if recipe.recipeid in cookbook_recipes %}
+                                    Remove from Cookbook
+                                {% else %}
+                                    Add to Cookbook
+                                {% endif %}
+                            </button>
+                        </form>
+                        <form action="{{ url_for('routes.delete_recipe', recipe_id=recipe.recipeid) }}" method="post" style="display:inline;">
+                            <button type="submit">Delete</button>
+                        </form>
+                        <form action="{{ url_for('routes.edit_recipe', recipe_id=recipe.recipeid) }}" method="get" style="display:inline;">
+                            <button type="submit">Edit</button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
         {% else %}
-            <p>No recipes available.</p>
-        {% endfor %}
+            <p>You haven’t created any recipes yet.</p>
+        {% endif %}
+
+        <h3>Other Recipes</h3>
+        {% if other_recipes %}
+            {% for recipe in other_recipes %}
+                <div class="recipe-card">
+                    <h4><a href="{{ url_for('routes.view_recipe', recipe_id=recipe.recipeid) }}">{{ recipe.title }}</a></h4>
+                    <p><strong>Ingredients:</strong> {{ recipe.ingredients }}</p>
+                    <p><strong>Instructions:</strong> {{ recipe.instructions }}</p>
+                    <p><strong>Privacy:</strong> {% if recipe.isPrivate %}Private{% else %}Public{% endif %}</p>
+                    <p><strong>Publisher:</strong> {{ recipe.publisher }}</p>
+
+                    <div class="recipe-actions">
+                        <form action="{% if recipe.recipeid in cookbook_recipes %}
+                                {{ url_for('routes.remove_from_cookbook_homeview', recipe_id=recipe.recipeid) }}
+                            {% else %}
+                                {{ url_for('routes.add_to_cookbook', recipe_id=recipe.recipeid) }}
+                            {% endif %}" method="post" style="display:inline;">
+                            <button type="submit">
+                                {% if recipe.recipeid in cookbook_recipes %}
+                                    Remove from Cookbook
+                                {% else %}
+                                    Add to Cookbook
+                                {% endif %}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No public recipes from other users yet.</p>
+        {% endif %}
     </div>
 </body>
 </html>
