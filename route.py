@@ -18,7 +18,29 @@ def login():
             session["username"] = user.username
             return redirect(url_for("routes.home"))
         else:
-            return "Invalid credentials", 401
+            return render_template("login.html", error="Invalid credentials")
+
+    return render_template("login.html")
+
+
+@routes.route("/signup", methods=["GET", "POST"])
+def signup():
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+
+        existing_user = User.query.filter_by(username=username).first()
+        if existing_user:
+            error_message = "Username already exists."
+            return render_template("login.html", error=error_message)
+
+        user = User(username=username, upassword=password)
+        db.session.add(user)
+        db.session.commit()
+
+        session["username"] = user.username
+
+        return redirect(url_for("routes.home"))
 
     return render_template("login.html")
 
@@ -30,7 +52,7 @@ def home():
         return redirect(url_for("routes.login"))
     recipes = Recipe.query.all()
     user_recipes = [recipe for recipe in recipes if recipe.publisher == session["username"]]
-    other_recipes = [recipe for recipe in recipes if recipe.publisher == session["username"]]
+    other_recipes = [recipe for recipe in recipes if recipe.publisher != session["username"]]
     cookbook_entries = Cookbook.query.filter_by(author=session["username"]).all()
     cookbook_recipes = {entry.recipeid for entry in cookbook_entries}
 

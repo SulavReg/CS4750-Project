@@ -2,27 +2,121 @@
 <html>
 <head>
     <title>{{ recipe.title }}</title>
+    <style>
+        body {
+            font-family: 'Georgia', serif;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .topbar {
+            background-color: white;
+            color: #000080;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .topbar h2 {
+            margin: 0;
+            font-size: 24px;
+            color: #000080;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            color: #000080;
+            text-decoration: none;
+            font-weight: bold;
+            font-family: 'Georgia', serif;
+            font-size: 16px;
+        }
+
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 30px 40px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        h3 {
+            border-bottom: 2px solid #000080;
+            padding-bottom: 5px;
+            color: #333;
+        }
+
+        p {
+            color: #555;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+            padding: 10px 16px;
+            border-radius: 4px;
+            background-color: #000080;
+            color: white;
+            font-family: 'Georgia', serif;
+            font-weight: bold;
+        }
+
+        .back-link:hover {
+            background-color: #000066;
+        }
+    </style>
 </head>
 <body>
-    <h2>{{ recipe.title }}</h2>
-    <p><strong>Ingredients:</strong> {{ recipe.ingredients }}</p>
-    <p><strong>Instructions:</strong> {{ recipe.instructions }}</p>
-    <p><strong>Privacy:</strong> {% if recipe.isprivate %} Private {% else %} Public {% endif %}</p>
-    <p><strong>Publisher:</strong> {{ recipe.publisher }}</p>
+    <div class="topbar">
+        <h2>{{ recipe.title }}</h2>
+        <div class="nav-links">
+            <a href="{{ url_for('routes.home') }}">Home</a>
+            <a href="{{ url_for('routes.new_recipe') }}">New Recipe</a>
+            <a href="{{ url_for('routes.logout') }}">Logout</a>
+        </div>
+    </div>
 
-    <hr>
+    <div class="container">
+        <p><strong>Ingredients:</strong> {{ recipe.ingredients }}</p>
+        <p><strong>Instructions:</strong> {{ recipe.instructions }}</p>
+        <p><strong>Privacy:</strong> {% if recipe.isprivate %} Private {% else %} Public {% endif %}</p>
+        <p><strong>Publisher:</strong> {{ recipe.publisher }}</p>
 
-    <h3>Comments:</h3>
-    {% if comments %}
-        <ul>
-        {% for comment in comments %}
-            <li><strong>{{ comment.username }}</strong>: {{ comment.contents }} ({{ comment.date_posted.strftime('%Y-%m-%d %H:%M') }})</li>
-        {% endfor %}
-        </ul>
-    {% else %}
-        <p>No comments yet.</p>
-    {% endif %}
+        <br>
+        <br>
 
-    <a href="{{ url_for('routes.home') }}">Back to Home</a>
+        <h3>Comments:</h3>
+        {% if comments %}
+            <ul>
+            {% for comment in comments %}
+                <p><strong>{{ comment.username }}</strong>: {{ comment.contents }} ({{ comment.date_posted.strftime('%Y-%m-%d %H:%M') }})</p>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p>No comments yet.</p>
+        {% endif %}
+
+        <a class="back-link" href="{{ url_for('routes.home') }}">Back to Home</a>
+    </div>
 </body>
 </html>
