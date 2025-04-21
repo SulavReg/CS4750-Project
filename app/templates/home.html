@@ -31,7 +31,7 @@
         <h3>Recipes:</h3>
         {% for recipe in recipes %}
             <div class="recipe-card">
-                <h4>{{ recipe.title }}</h4>
+                <h4><a href="{{ url_for('routes.view_recipe', recipe_id=recipe.recipeid) }}">{{ recipe.title }}</a></h4>
                 <p><strong>Ingredients:</strong> {{ recipe.ingredients }}</p>
                 <p><strong>Instructions:</strong> {{ recipe.instructions }}</p>
                 <p><strong>Privacy:</strong> {% if recipe.isPrivate %} Private {% else %} Public {% endif %}</p>

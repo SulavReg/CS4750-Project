@@ -1,5 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session
-from models import db, User, Recipe
+from models import db, User, Recipe, RecipeComment
+from datetime import datetime
+
 
 routes = Blueprint("routes", __name__)
 
@@ -58,6 +60,15 @@ def new_recipe():
 
     return render_template("new_recipe.html")
 
+
+# Recipe viewing page
+@routes.route("/recipe/<int:recipe_id>")
+def view_recipe(recipe_id):
+    recipe = Recipe.query.get_or_404(recipe_id)
+    comments = RecipeComment.query.filter_by(recipeid=recipe_id).order_by(RecipeComment.commentid.asc()).all()
+    return render_template('view_recipe.html', recipe=recipe, comments=comments)
+
+  
 @routes.route("/edit_recipe/<int:recipe_id>", methods=["GET", "POST"])
 def edit_recipe(recipe_id):
     if "username" not in session:
