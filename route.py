@@ -58,6 +58,39 @@ def new_recipe():
 
     return render_template("new_recipe.html")
 
+@routes.route("/edit_recipe/<int:recipe_id>", methods=["GET", "POST"])
+def edit_recipe(recipe_id):
+    if "username" not in session:
+        return redirect(url_for("routes.login"))
+
+    recipe = Recipe.query.get_or_404(recipe_id)
+
+    if recipe.publisher != session["username"]:
+        return "Unauthorized", 403
+
+    if request.method == "POST":
+        recipe.title = request.form["recipe_name"]
+        recipe.ingredients = request.form["ingredients"]
+        recipe.instructions = request.form["instructions"]
+        db.session.commit()
+        return redirect(url_for("routes.home"))
+
+    return render_template("edit_recipe.html", recipe=recipe)
+
+@routes.route("/delete_recipe/<int:recipe_id>", methods=["POST"])
+def delete_recipe(recipe_id):
+    if "username" not in session:
+        return redirect(url_for("routes.login"))
+
+    recipe = Recipe.query.get_or_404(recipe_id)
+
+    if recipe.publisher != session["username"]:
+        return "Unauthorized", 403
+
+    db.session.delete(recipe)
+    db.session.commit()
+    return redirect(url_for("routes.home"))
+
 
 # Logout
 @routes.route("/logout")
