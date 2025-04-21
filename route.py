@@ -1,5 +1,5 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session
-from models import db, User, Recipe, RecipeComment
+from flask import Blueprint, render_template, request, redirect, url_for, session, flash
+from models import db, User, Recipe, RecipeComment, Cookbook
 from datetime import datetime
 
 
@@ -18,7 +18,29 @@ def login():
             session["username"] = user.username
             return redirect(url_for("routes.home"))
         else:
-            return "Invalid credentials", 401
+            return render_template("login.html", error="Invalid credentials")
+
+    return render_template("login.html")
+
+
+@routes.route("/signup", methods=["GET", "POST"])
+def signup():
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+
+        existing_user = User.query.filter_by(username=username).first()
+        if existing_user:
+            error_message = "Username already exists."
+            return render_template("login.html", error=error_message)
+
+        user = User(username=username, upassword=password)
+        db.session.add(user)
+        db.session.commit()
+
+        session["username"] = user.username
+
+        return redirect(url_for("routes.home"))
 
     return render_template("login.html")
 
@@ -29,8 +51,13 @@ def home():
     if "username" not in session:
         return redirect(url_for("routes.login"))
     recipes = Recipe.query.all()
+    user_recipes = [recipe for recipe in recipes if recipe.publisher == session["username"]]
+    other_recipes = [recipe for recipe in recipes if recipe.publisher != session["username"]]
+    cookbook_entries = Cookbook.query.filter_by(author=session["username"]).all()
+    cookbook_recipes = {entry.recipeid for entry in cookbook_entries}
 
-    return render_template("home.html", username=session["username"], recipes=recipes)
+    return render_template("home.html", username=session["username"], user_recipes=user_recipes,
+                           other_recipes=other_recipes, cookbook_recipes=cookbook_recipes)
 
 
 # New recipe page
@@ -67,6 +94,71 @@ def view_recipe(recipe_id):
     recipe = Recipe.query.get_or_404(recipe_id)
     comments = RecipeComment.query.filter_by(recipeid=recipe_id).order_by(RecipeComment.commentid.asc()).all()
     return render_template('view_recipe.html', recipe=recipe, comments=comments)
+
+
+@routes.route("/recipe_cookbook/<int:recipe_id>")
+def view_recipe_from_cookbook(recipe_id):
+    recipe = Recipe.query.get_or_404(recipe_id)
+    comments = RecipeComment.query.filter_by(recipeid=recipe_id).order_by(RecipeComment.commentid.asc()).all()
+    return render_template('view_recipe_from_cookbook.html', recipe=recipe, comments=comments)
+
+
+@routes.route("/cookbook")
+def view_cookbook():
+    if "username" not in session:
+        return redirect(url_for("routes.login"))
+
+    cookbook = Cookbook.query.filter_by(author=session["username"]).all()
+    recipe_ids = [entry.recipeid for entry in cookbook]
+    recipes = Recipe.query.filter(Recipe.recipeid.in_(recipe_ids)).all()
+
+    return render_template('view_cookbook.html', recipes=recipes)
+
+
+@routes.route("/add_to_cookbook/<int:recipe_id>", methods=["POST"])
+def add_to_cookbook(recipe_id):
+    if "username" not in session:
+        return redirect(url_for("routes.login"))
+
+    username = session["username"]
+
+    existing_entry = Cookbook.query.filter_by(author=username, recipeid=recipe_id).first()
+    if existing_entry:
+        flash("Recipe is already in your cookbook.")
+    else:
+        new_entry = Cookbook(author=username, recipeid=recipe_id)
+        db.session.add(new_entry)
+        db.session.commit()
+        flash("Recipe added to your cookbook!")
+    return redirect(url_for("routes.home"))
+
+
+@routes.route("/remove_from_cookbook/<int:recipe_id>", methods=["POST"])
+def remove_from_cookbook(recipe_id):
+    if "username" not in session:
+        return redirect(url_for("routes.login"))
+
+    username = session["username"]
+
+    entry = Cookbook.query.filter_by(author=username, recipeid=recipe_id).first()
+    if entry:
+        db.session.delete(entry)
+        db.session.commit()
+    return redirect(url_for("routes.view_cookbook"))
+
+
+@routes.route("/remove_from_cookbook_homeview/<int:recipe_id>", methods=["POST"])
+def remove_from_cookbook_homeview(recipe_id):
+    if "username" not in session:
+        return redirect(url_for("routes.login"))
+
+    username = session["username"]
+
+    entry = Cookbook.query.filter_by(author=username, recipeid=recipe_id).first()
+    if entry:
+        db.session.delete(entry)
+        db.session.commit()
+    return redirect(url_for("routes.home"))
 
   
 @routes.route("/edit_recipe/<int:recipe_id>", methods=["GET", "POST"])

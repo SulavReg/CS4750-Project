@@ -2,15 +2,137 @@
 <html>
 <head>
     <title>New Recipe</title>
+    <style>
+        body {
+            font-family: 'Georgia', serif;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .topbar {
+            background-color: white;
+            color: #000080;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .topbar h2 {
+            margin: 0;
+            font-size: 24px;
+            color: #000080;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            color: #000080;
+            text-decoration: none;
+            font-weight: bold;
+            font-family: 'Georgia', serif;
+            font-size: 16px;
+        }
+
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        h3 {
+            color: #000080;
+            margin-top: 0;
+        }
+
+        label {
+            display: block;
+            margin: 15px 0 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            font-family: 'Georgia', serif;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        textarea {
+            resize: vertical;
+            height: 100px;
+        }
+
+        input[type="submit"] {
+            background-color: #000080;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            font-family: 'Georgia', serif;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #000066;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #6c757d;
+            font-weight: bold;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-    <h2>Create a New Recipe</h2>
-    <form method="post">
-        Recipe Name: <input type="text" name="recipe_name" required><br>
-        Ingredients: <textarea name="ingredients"></textarea><br>
-        Instructions: <textarea name="instructions"></textarea><br>
-        <input type="submit" value="Submit">
-    </form>
-    <a href="{{ url_for('routes.home') }}">Back to Home</a>
+    <div class="topbar">
+        <h2>Create a New Recipe</h2>
+        <div class="nav-links">
+            <a href="{{ url_for('routes.view_cookbook') }}">View Cookbook</a>
+            <a href="{{ url_for('routes.new_recipe') }}">New Recipe</a>
+            <a href="{{ url_for('routes.logout') }}">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <form method="post">
+            <label for="recipe_name">Recipe Name:</label>
+            <input type="text" id="recipe_name" name="recipe_name" required>
+
+            <label for="ingredients">Ingredients:</label>
+            <textarea id="ingredients" name="ingredients"></textarea>
+
+            <label for="instructions">Instructions:</label>
+            <textarea id="instructions" name="instructions"></textarea>
+
+            <input type="submit" value="Submit">
+        </form>
+
+        <a class="back-link" href="{{ url_for('routes.home') }}">← Back to Home</a>
+    </div>
 </body>
 </html>

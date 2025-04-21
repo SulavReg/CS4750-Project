@@ -28,3 +28,8 @@ class RecipeComment(db.Model):
     username = db.Column(db.Text, db.ForeignKey('users.username'))
     recipeid = db.Column(db.Integer, db.ForeignKey('recipes.recipeid'))
     date_posted = db.Column(db.DateTime, nullable=False)
+
+class Cookbook(db.Model):
+    __tablename__ = 'cookbook'
+    author = db.Column(db.Text, primary_key=True)
+    recipeid = db.Column(db.Text, primary_key=True)

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Your Cookbook</title>
+    <style>
+        body {
+            font-family: 'Georgia', serif;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .topbar {
+            background-color: white;
+            color: #000080;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .topbar h2 {
+            margin: 0;
+            font-size: 24px;
+            color: #000080;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            color: #000080;
+            text-decoration: none;
+            font-weight: bold;
+            font-family: 'Georgia', serif;
+            font-size: 16px;
+        }
+
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+
+        .cookbook {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        h3 {
+            border-bottom: 2px solid #000080;
+            padding-bottom: 5px;
+            color: #333;
+        }
+
+        .recipe-card {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .recipe-card h4 {
+            margin-top: 0;
+            color: #000080;
+        }
+
+        .recipe-card p {
+            margin: 5px 0;
+            color: #555;
+        }
+
+        button {
+            background-color: #000080;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            font-family: 'Georgia', serif;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #000066;
+        }
+
+        a.button-link {
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            background-color: #6c757d;
+            color: white;
+        }
+
+        a.button-link:hover {
+            background-color: #5a6268;
+        }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <h2>Cookbook</h2>
+        <div class="nav-links">
+            <a href="{{ url_for('routes.home') }}">Home</a>
+            <a href="{{ url_for('routes.new_recipe') }}">New Recipe</a>
+            <a href="{{ url_for('routes.logout') }}">Logout</a>
+        </div>
+    </div>
+
+    <div class="cookbook">
+        <h3>Recipes:</h3>
+        {% for recipe in recipes %}
+            <div class="recipe-card">
+                <h4><a href="{{ url_for('routes.view_recipe_from_cookbook', recipe_id=recipe.recipeid) }}">{{ recipe.title }}</a></h4>
+                <p><strong>Ingredients:</strong> {{ recipe.ingredients }}</p>
+                <p><strong>Instructions:</strong> {{ recipe.instructions }}</p>
+                <p><strong>Privacy:</strong> {% if recipe.isPrivate %} Private {% else %} Public {% endif %}</p>
+                <p><strong>Publisher:</strong> {{ recipe.publisher }}</p>
+
+                <form action="{{ url_for('routes.remove_from_cookbook', recipe_id=recipe.recipeid) }}" method="post" style="display:inline;">
+                    <button type="submit">Remove From Cookbook</button>
+                </form>
+            </div>
+        {% else %}
+            <p>No recipes in your cookbook yet.</p>
+        {% endfor %}
+    </div>
+</body>
+</html>
