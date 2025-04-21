@@ -36,6 +36,13 @@
                 <p><strong>Instructions:</strong> {{ recipe.instructions }}</p>
                 <p><strong>Privacy:</strong> {% if recipe.isPrivate %} Private {% else %} Public {% endif %}</p>
                 <p><strong>Publisher:</strong> {{ recipe.publisher }}</p>
+
+                {% if recipe.publisher == username %}
+                    <form action="{{ url_for('routes.delete_recipe', recipe_id=recipe.recipeid) }}" method="post" style="display:inline;">
+                        <button type="submit">Delete</button>
+                    </form>
+                    <a href="{{ url_for('routes.edit_recipe', recipe_id=recipe.recipeid) }}">Edit</a>
+                {% endif %}
             </div>
         {% else %}
             <p>No recipes available.</p>
