@@ -129,6 +129,12 @@
             <label for="instructions">Instructions:</label>
             <textarea id="instructions" name="instructions">{{ recipe.instructions }}</textarea>
 
+            <label for="privacy">Privacy:</label><br>
+            <select id="privacy" name="privacy">
+                <option value="public" {% if not recipe.isprivate %}selected{% endif %}>Public</option>
+                <option value="private" {% if recipe.isprivate %}selected{% endif %}>Private</option>
+            </select><br><br>
+
             <input type="submit" value="Update">
         </form>
 

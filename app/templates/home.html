@@ -126,7 +126,7 @@
                     <h4><a href="{{ url_for('routes.view_recipe', recipe_id=recipe.recipeid) }}">{{ recipe.title }}</a></h4>
                     <p><strong>Ingredients:</strong> {{ recipe.ingredients }}</p>
                     <p><strong>Instructions:</strong> {{ recipe.instructions }}</p>
-                    <p><strong>Privacy:</strong> {% if recipe.isPrivate %}Private{% else %}Public{% endif %}</p>
+                    <p><strong>Privacy:</strong> {% if recipe.isprivate %}Private{% else %}Public{% endif %}</p>
                     <div class="recipe-actions">
                         <form action="{% if recipe.recipeid in cookbook_recipes %}
                                 {{ url_for('routes.remove_from_cookbook_homeview', recipe_id=recipe.recipeid) }}
@@ -161,7 +161,7 @@
                     <h4><a href="{{ url_for('routes.view_recipe', recipe_id=recipe.recipeid) }}">{{ recipe.title }}</a></h4>
                     <p><strong>Ingredients:</strong> {{ recipe.ingredients }}</p>
                     <p><strong>Instructions:</strong> {{ recipe.instructions }}</p>
-                    <p><strong>Privacy:</strong> {% if recipe.isPrivate %}Private{% else %}Public{% endif %}</p>
+                    <p><strong>Privacy:</strong> {% if recipe.isprivate %}Private{% else %}Public{% endif %}</p>
                     <p><strong>Publisher:</strong> {{ recipe.publisher }}</p>
 
                     <div class="recipe-actions">

@@ -82,7 +82,8 @@ def new_recipe():
         recipe_name = request.form["recipe_name"]
         ingredients = request.form["ingredients"]
         instructions = request.form["instructions"]
-        is_private = False
+        privacy = request.form["privacy"]
+        is_private = privacy == "private"
 
         new = Recipe(
             title=recipe_name,
@@ -187,6 +188,8 @@ def edit_recipe(recipe_id):
         recipe.title = request.form["recipe_name"]
         recipe.ingredients = request.form["ingredients"]
         recipe.instructions = request.form["instructions"]
+        privacy = request.form["privacy"]
+        recipe.isprivate = privacy =="private"
         db.session.commit()
         return redirect(url_for("routes.home"))
 
