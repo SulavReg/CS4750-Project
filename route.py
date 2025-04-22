@@ -206,6 +206,26 @@ def delete_recipe(recipe_id):
     db.session.commit()
     return redirect(url_for("routes.home"))
 
+#routes for friendship functionality (add_friend, accept_friend, view_friends)
+# @routes.route("/add_friend/<string:friend_username>", methods=["POST"])
+# def add_friend(friend_username):
+#     if "username" not in session:
+#         return redirect(url_for("routes.login"))
+#     user = User.query.filter_by(username=session["username"]).first()
+#     friend = User.query.filter_by(username=friend_username).first()
+#     if not friend: #check friend exists
+#         flash("User not found!")
+#         return redirect(url_for("routes.home"))
+    
+#route for viewing profiles
+@routes.route("/user/<username>")
+def view_user_profile(username):
+    user = User.query.filter_by(username=username).first()
+    if not user:
+        flash("User not found")
+        return redirect(url_for("routes.home"))
+    recipes = Recipe.query.filter_by(publisher=username).all()
+    return render_template("user_profile.html", user=user, recipes=recipes)
 
 # Logout
 @routes.route("/logout")
