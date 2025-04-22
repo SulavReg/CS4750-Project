@@ -233,6 +233,24 @@ def add_friend(friend_username): #user sends a friend request to another user
     #return to user profile page
     return redirect(url_for("routes.view_user_profile", username=friend.username))
 
+@routes.route("/view_friend_requests", methods=["GET"])
+def view_friend_requests(): #see incoming requests
+    if "username" not in session:
+        return redirect(url_for("routes.login"))
+    user=User.query.filter_by(username=session["username"]).first()
+    if not user:
+        return redirect(url_for("routes.home"))
+    
+    #get all pending requests that are incoming
+    pending_requests= Friends.query.filter(
+        Friends.friend_id==user.username,
+        Friends.status=='pending'
+    ).all()
+    #get the usernames of the inviters
+    pending_usernames = [request.user_id for request in pending_requests]
+    pending_users = User.query.filter(User.username.in_(pending_usernames)).all()
+    return render_template("view_friend_requests.html", pending_requests=pending_users)
+
 @routes.route("/accept_friend/<string:friend_username>", methods = ["POST"])#accept friend request
 def accept_friend(friend_username):
     if "username" not in session:
@@ -276,16 +294,6 @@ def view_friends(): #see ur friends list
             friend_usernames.append(friend.user_id)
     friend_users = User.query.filter(User.username.in_(friend_usernames)).all()  #get the user objects for each friend
     return render_template("view_friends.html", friends=friend_users)
-
-#routes for viewing profiles
-# @routes.route("/user/<username>") #view others
-# def view_user_profile(username): 
-#     user = User.query.filter_by(username=username).first()
-#     if not user:
-#         flash("User not found")
-#         return redirect(url_for("routes.home"))
-#     recipes = Recipe.query.filter_by(publisher=username).all()
-#     return render_template("user_profile.html", user=user, recipes=recipes)
 
 @routes.route("/user/<username>", methods=["GET", "POST"]) #view others + with edits to check friendship status
 def view_user_profile(username): 

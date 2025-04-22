@@ -94,7 +94,7 @@
 </head>
 <body>
     <div class="topbar">
-        <h2>My Profile</h2>
+        <h2>My Profile </h2>
         <div class="nav-links">
             <a href="{{ url_for('routes.home') }}">Home</a>
             <a href="{{ url_for('routes.view_cookbook') }}">View Cookbook</a>
@@ -103,7 +103,7 @@
     </div>
 
     <div class="container">
-        <h3>About Me</h3> <!-- bio -->
+        <h3>About Me ({{user.username}})</h3> <!-- bio -->
         <div class="bio-section">
             {% if user.bio %}
                 <p>{{ user.bio }}</p>
@@ -119,11 +119,15 @@
             </a>
         </div>
 
-        <!-- view friends-->
+        <!-- view friends and incoming friend requests-->
         <div class="recipe-actions">
             <a href="{{ url_for('routes.view_friends') }}">
                 <button>View My Friends</button>
             </a>
+            <!--added view friend requests-->
+            <form action="{{ url_for('routes.view_friend_requests') }}" method="get">
+                <button type="submit">View Friend Requests</button>
+            </form>
         </div>
         
         <!-- see own recipes-->
