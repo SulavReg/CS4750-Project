@@ -119,8 +119,13 @@
             </a>
         </div>
 
-        <!-- TODO: add view friends-->
-    
+        <!-- view friends-->
+        <div class="recipe-actions">
+            <a href="{{ url_for('routes.view_friends') }}">
+                <button>View My Friends</button>
+            </a>
+        </div>
+        
         <!-- see own recipes-->
         <h3>Your Recipes</h3>
         {% if user_recipes %}

@@ -34,12 +34,13 @@ class Cookbook(db.Model):
     author = db.Column(db.Text, primary_key=True)
     recipeid = db.Column(db.Text, primary_key=True)
 
-# class Friends(db.Model):
-#     __tablename__ = 'friends'
-#     id = db.Column(db.Integer, primary_key=True) #friendship id
-#     user_id = db.Column(db.Text, db.ForeignKey('user.username')) 
-#     friend_id = db.Column(db.Text, db.ForeignKey('user.username'))
-#     status = db.Column(db.String(20), default = 'pending') #add functionality to request friendships
+class Friends(db.Model):
+    __tablename__ = 'friends'
+    id = db.Column(db.Integer, primary_key=True) #friendship id
+    user_id = db.Column(db.String, db.ForeignKey('users.username'), nullable=False)
+    friend_id = db.Column(db.String, db.ForeignKey('users.username'), nullable=False)
+
+    status = db.Column(db.String(20), default = 'pending') #add functionality to request friendships
     
-#     user = db.relationship('User', foreign_keys=[user_id], backref = 'sent_requests')
-#     friend = db.relationship('User', foreign_keys=[friend_id], backref = 'received_requests')
+    user = db.relationship('User', foreign_keys=[user_id], backref = 'sent_requests')
+    friend = db.relationship('User', foreign_keys=[friend_id], backref = 'received_requests')

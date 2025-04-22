@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
-from models import db, User, Recipe, RecipeComment, Cookbook
+from models import db, User, Recipe, RecipeComment, Cookbook, Friends
 from datetime import datetime
 
 
@@ -207,25 +207,104 @@ def delete_recipe(recipe_id):
     return redirect(url_for("routes.home"))
 
 #routes for friendship functionality (add_friend, accept_friend, view_friends)
-# @routes.route("/add_friend/<string:friend_username>", methods=["POST"])
-# def add_friend(friend_username):
-#     if "username" not in session:
-#         return redirect(url_for("routes.login"))
-#     user = User.query.filter_by(username=session["username"]).first()
-#     friend = User.query.filter_by(username=friend_username).first()
-#     if not friend: #check friend exists
-#         flash("User not found!")
-#         return redirect(url_for("routes.home"))
+@routes.route("/add_friend/<string:friend_username>", methods=["POST"])
+def add_friend(friend_username): #user sends a friend request to another user
+    if "username" not in session:
+        return redirect(url_for("routes.login"))
+    user = User.query.filter_by(username=session["username"]).first()
+    friend = User.query.filter_by(username=friend_username).first()
+    if not friend: #check friend exists
+        flash("User not found!")
+        return redirect(url_for("routes.home"))
+
+    existing_request = Friends.query.filter(#added to check if the friendship alr exists
+        (Friends.user_id==user.username) &(Friends.friend_id==friend.username) |
+        (Friends.user_id==friend.username)&(Friends.friend_id==user.username)
+    ).first()
+    if existing_request:
+        #flash("Friendship already exists or is pending")
+        return redirect(url_for("routes.home"))
     
+    #make request set to pending
+    request = Friends(user_id=user.username, friend_id=friend.username, status='pending')
+    db.session.add(request)
+    db.session.commit()
+
+    #return to user profile page
+    return redirect(url_for("routes.view_user_profile", username=friend.username))
+
+@routes.route("/accept_friend/<string:friend_username>", methods = ["POST"])#accept friend request
+def accept_friend(friend_username):
+    if "username" not in session:
+        return redirect(url_for("routes.login"))
+    user =User.query.filter_by(username=session["username"]).first()
+    friend = User.query.filter_by(username=friend_username).first()
+    if not friend: #check taht friend exist
+        flash("User not found :(")
+        return redirect(url_for("routes.home"))
+    #find the request to accept--
+    request= Friends.query.filter(
+        Friends.user_id == friend.username,
+        Friends.friend_id == user.username,
+        Friends.status == 'pending'
+    ).first()
+    if not request: 
+        flash("No request to accept:(")
+        return redirect(url_for("routes.home"))
+    request.status = 'accepted'
+    db.session.commit()
+    flash("You are friends now!")
+    return redirect(url_for("routes.home"))
+
+@routes.route("/view_friends", methods=["GET"])
+def view_friends(): #see ur friends list
+    if "username" not in session: 
+        return redirect(url_for("routes.home"))
+    
+    user= User.query.filter_by(username=session["username"]).first()
+    #get list of accepted friends--
+    friends = Friends.query.filter(
+        (Friends.user_id==user.username)|(Friends.friend_id==user.username), 
+        Friends.status=='accepted'
+    ).all()
+
+    friend_usernames=[]
+    for friend in friends:
+        if friend.user_id==user.username:
+            friend_usernames.append(friend.friend_id)
+        else:
+            friend_usernames.append(friend.user_id)
+    friend_users = User.query.filter(User.username.in_(friend_usernames)).all()  #get the user objects for each friend
+    return render_template("view_friends.html", friends=friend_users)
+
 #routes for viewing profiles
-@routes.route("/user/<username>") #view others
+# @routes.route("/user/<username>") #view others
+# def view_user_profile(username): 
+#     user = User.query.filter_by(username=username).first()
+#     if not user:
+#         flash("User not found")
+#         return redirect(url_for("routes.home"))
+#     recipes = Recipe.query.filter_by(publisher=username).all()
+#     return render_template("user_profile.html", user=user, recipes=recipes)
+
+@routes.route("/user/<username>", methods=["GET", "POST"]) #view others + with edits to check friendship status
 def view_user_profile(username): 
     user = User.query.filter_by(username=username).first()
     if not user:
         flash("User not found")
         return redirect(url_for("routes.home"))
+    #add stuff to check friendship status
+    current_user = User.query.filter_by(username=session["username"]).first()
+    existing_request = Friends.query.filter(
+        (Friends.user_id == current_user.username) & 
+        (Friends.friend_id == user.username) | 
+        (Friends.user_id == user.username) & 
+        (Friends.friend_id == current_user.username)
+    ).first()
+
     recipes = Recipe.query.filter_by(publisher=username).all()
-    return render_template("user_profile.html", user=user, recipes=recipes)
+    #return render_template("user_profile.html", user=user, recipes=recipes)
+    return render_template("user_profile.html", user=user, recipes=recipes, existing_request=existing_request)
 
 @routes.route("/my_profile")
 def view_my_profile(): #can view own friends list and cookbook, too

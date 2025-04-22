@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>{{ user.username }}'s Recipes</title>
+    <title>My Friends</title>
     <style>
         body {
             font-family: 'Georgia', serif;
@@ -54,7 +54,7 @@
             color: #333;
         }
 
-        .recipe-card {
+        .friend-card {
             background-color: white;
             border: 1px solid #ddd;
             border-radius: 8px;
@@ -63,17 +63,12 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
-        .recipe-card h4 {
-            margin-top: 0;
+        .friend-card h4 {
+            margin: 0;
             color: #000080;
         }
 
-        .recipe-card p {
-            margin: 5px 0;
-            color: #555;
-        }
-
-        .recipe-actions {
+        .friend-actions {
             margin-top: 10px;
         }
 
@@ -90,49 +85,50 @@
         button:hover {
             background-color: #000066;
         }
+
+        a.button-link {
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            background-color: #6c757d;
+            color: white;
+        }
+
+        a.button-link:hover {
+            background-color: #5a6268;
+        }
     </style>
 </head>
 <body>
     <div class="topbar">
-        <h2>{{ user.username }}'s Profile</h2>
+        <h2>My Friends</h2>
         <div class="nav-links">
-            <a href="{{ url_for('routes.home') }}">Home</a>
             <a href="{{ url_for('routes.view_cookbook') }}">View Cookbook</a>
+            <a href="{{ url_for('routes.new_recipe') }}">New Recipe</a>
             <a href="{{ url_for('routes.logout') }}">Logout</a>
         </div>
     </div>
-    
-    <div class="container">
-        <h3>About {{user.username}}</h3> <!-- bio -->
-        <div class="bio-section">
-            {% if user.bio %}
-                <p>{{ user.bio }}</p>
-            {% else %}
-                <p>This user has not added a bio yet.</p>
-            {% endif %}
-        </div>
-        <!--add send friend request option-->
-        <form method="POST" action="{{ url_for('routes.add_friend', friend_username=user.username) }}">
-            {% if existing_request %}
-                <button type="submit" disabled>Requested</button>
-            {% else %}
-                <button type="submit">Send Friend Request</button>
-            {% endif %}
-        </form>
 
-        <!-- list recipes published by the user -->
-        <h3>Recipes by {{ user.username }}</h3>
-        {% if recipes %}
-            {% for recipe in recipes %}
-                <div class="recipe-card">
-                    <h4><a href="{{ url_for('routes.view_recipe', recipe_id=recipe.recipeid) }}">{{ recipe.title }}</a></h4>
-                    <p><strong>Ingredients:</strong> {{ recipe.ingredients }}</p>
-                    <p><strong>Instructions:</strong> {{ recipe.instructions }}</p>
-                    <p><strong>Privacy:</strong> {% if recipe.isPrivate %}Private{% else %}Public{% endif %}</p>
+    <div class="container">
+        <form action="{{ url_for('routes.view_my_profile') }}" method="get">
+            <button type="submit">Back to My Profile</button>
+        </form>
+        <h3>Friends List</h3>
+        {% if friends %}
+            {% for friend in friends %}
+                <div class="friend-card">
+                    <h4>
+                        <a href="{{ url_for('routes.view_user_profile', username=friend.username) }}">
+                            {{ friend.username }}
+                        </a>
+                    </h4>
+                    {% if friend.bio %}
+                        <p><strong>Bio:</strong> {{ friend.bio }}</p>
+                    {% endif %}
                 </div>
             {% endfor %}
         {% else %}
-            <p>This user has not posted any public recipes yet.</p>
+            <p>You have no friends yet.</p>
         {% endif %}
     </div>
 </body>
