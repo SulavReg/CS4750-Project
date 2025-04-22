@@ -122,6 +122,12 @@
             <p>No comments yet.</p>
         {% endif %}
 
+        <h3>Leave a Comment:</h3>
+        <form method="POST">
+          <textarea name="comment" rows="4" cols="50" required></textarea><br><br>
+          <button type="submit">Post Comment</button>
+        </form>
+
         <a class="back-link" href="{{ url_for('routes.home') }}">Back to Home</a>
     </div>
 </body>

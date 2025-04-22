@@ -107,12 +107,31 @@ def new_recipe():
     return render_template("new_recipe.html")
 
 
-# Recipe viewing page
-@routes.route("/recipe/<int:recipe_id>")
+@routes.route("/recipe/<int:recipe_id>", methods=["GET", "POST"])
 def view_recipe(recipe_id):
     recipe = Recipe.query.get_or_404(recipe_id)
     comments = RecipeComment.query.filter_by(recipeid=recipe_id).order_by(RecipeComment.commentid.asc()).all()
-    return render_template('view_recipe.html', recipe=recipe, comments=comments)
+
+    if request.method == "POST":
+        if "username" not in session:
+            return redirect(url_for("routes.login"))
+
+        comment_text = request.form.get("comment")
+
+        if comment_text:
+            new_comment = RecipeComment(
+                recipeid=recipe_id,
+                username=session["username"],
+                contents=comment_text,
+                date_posted=datetime.now()
+            )
+
+            db.session.add(new_comment)
+            db.session.commit()
+
+            return redirect(url_for("routes.view_recipe", recipe_id=recipe_id))
+
+    return render_template("view_recipe.html", recipe=recipe, comments=comments)
 
 
 @routes.route("/recipe_cookbook/<int:recipe_id>")
