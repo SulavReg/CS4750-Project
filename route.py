@@ -206,7 +206,7 @@ def delete_recipe(recipe_id):
     db.session.commit()
     return redirect(url_for("routes.home"))
 
-#routes for friendship functionality (add_friend, accept_friend, view_friends)
+#routes for friendship functionality (add_friend, view_friend_requests, accept_friend, reject_friend, view_friends)
 @routes.route("/add_friend/<string:friend_username>", methods=["POST"])
 def add_friend(friend_username): #user sends a friend request to another user
     if "username" not in session:
@@ -234,22 +234,29 @@ def add_friend(friend_username): #user sends a friend request to another user
     return redirect(url_for("routes.view_user_profile", username=friend.username))
 
 @routes.route("/view_friend_requests", methods=["GET"])
-def view_friend_requests(): #see incoming requests
+def view_friend_requests():
     if "username" not in session:
         return redirect(url_for("routes.login"))
-    user=User.query.filter_by(username=session["username"]).first()
+    
+    user = User.query.filter_by(username=session["username"]).first()
     if not user:
         return redirect(url_for("routes.home"))
     
-    #get all pending requests that are incoming
-    pending_requests= Friends.query.filter(
-        Friends.friend_id==user.username,
-        Friends.status=='pending'
+    #get incoming pending requests
+    pending_requests = Friends.query.filter(
+        Friends.friend_id == user.username,
+        Friends.status == 'pending'
     ).all()
-    #get the usernames of the inviters
+    
     pending_usernames = [request.user_id for request in pending_requests]
+    #debugging: print("Pending Usernames:", pending_usernames)
     pending_users = User.query.filter(User.username.in_(pending_usernames)).all()
-    return render_template("view_friend_requests.html", pending_requests=pending_users)
+
+    #debugging:
+    # print("Pending Requests:", pending_requests)
+    # print("Pending Users:", pending_users)
+    return render_template("view_friend_requests.html", pending_requests=pending_requests, pending_users=pending_users)
+
 
 @routes.route("/accept_friend/<string:friend_username>", methods = ["POST"])#accept friend request
 def accept_friend(friend_username):
@@ -272,6 +279,28 @@ def accept_friend(friend_username):
     request.status = 'accepted'
     db.session.commit()
     flash("You are friends now!")
+    return redirect(url_for("routes.home"))
+
+@routes.route("/reject_friend/<string:friend_username>", methods =["POST"])
+def reject_friend(friend_username):
+    if "username" not in session:
+        return redirect(url_for("routes.login"))
+    user = User.query.filter_by(username=session["username"]).first()
+    friend = User.query.filter_by(username=friend_username).first()
+    if not friend:
+        flash("User not found :(")
+        return redirect(url_for("routes.home"))
+    #find request to reject
+    request = Friends.query.filter(
+        Friends.user_id == friend.username,
+        Friends.friend_id == user.username,
+        Friends.status == 'pending'
+    ).first()
+    if not request:  #no pending request exists
+        flash("No request to reject")
+        return redirect(url_for("routes.home"))
+    db.session.delete(request)
+    db.session.commit()
     return redirect(url_for("routes.home"))
 
 @routes.route("/view_friends", methods=["GET"])
@@ -304,10 +333,8 @@ def view_user_profile(username):
     #add stuff to check friendship status
     current_user = User.query.filter_by(username=session["username"]).first()
     existing_request = Friends.query.filter(
-        (Friends.user_id == current_user.username) & 
-        (Friends.friend_id == user.username) | 
-        (Friends.user_id == user.username) & 
-        (Friends.friend_id == current_user.username)
+        ((Friends.user_id == current_user.username) & (Friends.friend_id == user.username)) |
+        ((Friends.user_id == user.username) & (Friends.friend_id == current_user.username))
     ).first()
 
     recipes = Recipe.query.filter_by(publisher=username).all()
@@ -318,11 +345,11 @@ def view_user_profile(username):
 def view_my_profile(): #can view own friends list and cookbook, too
     username = session.get("username")
     if not username: 
-        flash("Login please!")
+       # flash("Login please!")
         return redirect(url_for("routes.login"))
     user = User.query.filter_by(username=username).first()
     if not user:
-        flash("User not found")
+      #  flash("User not found")
         return redirect(url_for("routes.home"))
     my_recipes = Recipe.query.filter_by(publisher = username).all()
     cookbook_entries = Cookbook.query.filter_by(author = username).all()

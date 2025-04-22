@@ -47,7 +47,7 @@
             margin: 30px auto;
             padding: 0 20px;
         }
-
+        
         h3 {
             border-bottom: 2px solid #000080;
             padding-bottom: 5px;
@@ -75,6 +75,8 @@
 
         .recipe-actions {
             margin-top: 10px;
+            display: flex;
+            gap: 15px;
         }
 
         button {
@@ -89,6 +91,11 @@
 
         button:hover {
             background-color: #000066;
+        }
+
+        .button-container {
+            display: inline-block;
+            padding: 0 20px;
         }
     </style>
 </head>
@@ -112,23 +119,25 @@
             {% endif %}
         </div>
 
-        <!--view cookbok-->
+        
         <div class="recipe-actions">
+            <!--view cookbook-->
             <a href="{{ url_for('routes.view_cookbook') }}">
                 <button>View My Cookbook</button>
             </a>
+            <!-- view friends and incoming friend requests-->
+            <div class="button-container">
+                <a href="{{ url_for('routes.view_friends') }}">
+                    <button>View My Friends</button>
+                </a>
+            </div>
+            <div class="button-container">
+                <form action="{{ url_for('routes.view_friend_requests') }}" method="get">
+                    <button type="submit">View Friend Requests</button>
+                </form>
+            </div>
         </div>
-
-        <!-- view friends and incoming friend requests-->
-        <div class="recipe-actions">
-            <a href="{{ url_for('routes.view_friends') }}">
-                <button>View My Friends</button>
-            </a>
-            <!--added view friend requests-->
-            <form action="{{ url_for('routes.view_friend_requests') }}" method="get">
-                <button type="submit">View Friend Requests</button>
-            </form>
-        </div>
+    
         
         <!-- see own recipes-->
         <h3>Your Recipes</h3>
