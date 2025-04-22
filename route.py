@@ -217,9 +217,9 @@ def delete_recipe(recipe_id):
 #         flash("User not found!")
 #         return redirect(url_for("routes.home"))
     
-#route for viewing profiles
-@routes.route("/user/<username>")
-def view_user_profile(username):
+#routes for viewing profiles
+@routes.route("/user/<username>") #view others
+def view_user_profile(username): 
     user = User.query.filter_by(username=username).first()
     if not user:
         flash("User not found")
@@ -227,7 +227,21 @@ def view_user_profile(username):
     recipes = Recipe.query.filter_by(publisher=username).all()
     return render_template("user_profile.html", user=user, recipes=recipes)
 
-# Logout
+@routes.route("/my_profile")
+def view_my_profile(): #can view own friends list and cookbook, too
+    username = session.get("username")
+    if not username: 
+        flash("Login please!")
+        return redirect(url_for("routes.login"))
+    user = User.query.filter_by(username=username).first()
+    if not user:
+        flash("User not found")
+        return redirect(url_for("routes.home"))
+    my_recipes = Recipe.query.filter_by(publisher = username).all()
+    cookbook_entries = Cookbook.query.filter_by(author = username).all()
+    cookbook_recipe_ids =[entry.recipeid for entry in cookbook_entries]
+    return render_template("my_profile.html", user=user,user_recipes=my_recipes, cookbook_recipes=cookbook_recipe_ids)
+
 @routes.route("/logout")
 def logout():
     session.clear()

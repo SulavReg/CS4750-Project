@@ -112,6 +112,7 @@
     <div class="topbar">
         <h2>Home</h2>
         <div class="nav-links">
+            <a href="{{ url_for('routes.view_my_profile') }}">My Profile</a>
             <a href="{{ url_for('routes.view_cookbook') }}">View Cookbook</a>
             <a href="{{ url_for('routes.new_recipe') }}">New Recipe</a>
             <a href="{{ url_for('routes.logout') }}">Logout</a>
@@ -151,7 +152,7 @@
                 </div>
             {% endfor %}
         {% else %}
-            <p>You haven’t created any recipes yet.</p>
+            <p>You haven't created any recipes yet.</p>
         {% endif %}
 
         <h3>Other Recipes</h3>
