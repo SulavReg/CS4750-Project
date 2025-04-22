@@ -62,14 +62,20 @@ def signup():
 def home():
     if "username" not in session:
         return redirect(url_for("routes.login"))
-    recipes = Recipe.query.all()
-    user_recipes = [recipe for recipe in recipes if recipe.publisher == session["username"]]
-    other_recipes = [recipe for recipe in recipes if recipe.publisher != session["username"]]
-    cookbook_entries = Cookbook.query.filter_by(author=session["username"]).all()
-    cookbook_recipes = {entry.recipeid for entry in cookbook_entries}
 
-    return render_template("home.html", username=session["username"], user_recipes=user_recipes,
-                           other_recipes=other_recipes, cookbook_recipes=cookbook_recipes)
+    # Get the current logged-in user from session
+    username = session["username"]
+
+    # Query to get all recipes created by the logged-in user (including private ones)
+    user_recipes = Recipe.query.filter_by(publisher=username).all()
+
+    # Query to get all public recipes or recipes that are private but owned by the logged-in user
+    other_recipes = Recipe.query.filter(
+        (Recipe.isprivate == False) & (Recipe.publisher != username)
+    ).all()
+
+    # You can also pass `user_recipes` and `other_recipes` to the template as before
+    return render_template("home.html", user_recipes=user_recipes, other_recipes=other_recipes)
 
 
 # New recipe page

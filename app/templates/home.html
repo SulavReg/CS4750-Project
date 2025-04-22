@@ -120,70 +120,71 @@
 
     <div class="container">
         <h3>Your Recipes</h3>
-        {% if user_recipes %}
-            {% for recipe in user_recipes %}
-                <div class="recipe-card">
-                    <h4><a href="{{ url_for('routes.view_recipe', recipe_id=recipe.recipeid) }}">{{ recipe.title }}</a></h4>
-                    <p><strong>Ingredients:</strong> {{ recipe.ingredients }}</p>
-                    <p><strong>Instructions:</strong> {{ recipe.instructions }}</p>
-                    <p><strong>Privacy:</strong> {% if recipe.isprivate %}Private{% else %}Public{% endif %}</p>
-                    <div class="recipe-actions">
-                        <form action="{% if recipe.recipeid in cookbook_recipes %}
-                                {{ url_for('routes.remove_from_cookbook_homeview', recipe_id=recipe.recipeid) }}
-                            {% else %}
-                                {{ url_for('routes.add_to_cookbook', recipe_id=recipe.recipeid) }}
-                            {% endif %}" method="post" style="display:inline;">
-                            <button type="submit">
-                                {% if recipe.recipeid in cookbook_recipes %}
-                                    Remove from Cookbook
-                                {% else %}
-                                    Add to Cookbook
-                                {% endif %}
-                            </button>
-                        </form>
-                        <form action="{{ url_for('routes.delete_recipe', recipe_id=recipe.recipeid) }}" method="post" style="display:inline;">
-                            <button type="submit">Delete</button>
-                        </form>
-                        <form action="{{ url_for('routes.edit_recipe', recipe_id=recipe.recipeid) }}" method="get" style="display:inline;">
-                            <button type="submit">Edit</button>
-                        </form>
-                    </div>
-                </div>
-            {% endfor %}
-        {% else %}
-            <p>You haven’t created any recipes yet.</p>
-        {% endif %}
+            {% if user_recipes %}
+                {% for recipe in user_recipes %}
+                    <div class="recipe-card">
+                        <h4><a href="{{ url_for('routes.view_recipe', recipe_id=recipe.recipeid) }}">{{ recipe.title }}</a></h4>
+                        <p><strong>Ingredients:</strong> {{ recipe.ingredients }}</p>
+                        <p><strong>Instructions:</strong> {{ recipe.instructions }}</p>
+                        <p><strong>Privacy:</strong> {% if recipe.isprivate %}Private{% else %}Public{% endif %}</p>
 
-        <h3>Other Recipes</h3>
-        {% if other_recipes %}
-            {% for recipe in other_recipes %}
-                <div class="recipe-card">
-                    <h4><a href="{{ url_for('routes.view_recipe', recipe_id=recipe.recipeid) }}">{{ recipe.title }}</a></h4>
-                    <p><strong>Ingredients:</strong> {{ recipe.ingredients }}</p>
-                    <p><strong>Instructions:</strong> {{ recipe.instructions }}</p>
-                    <p><strong>Privacy:</strong> {% if recipe.isprivate %}Private{% else %}Public{% endif %}</p>
-                    <p><strong>Publisher:</strong> {{ recipe.publisher }}</p>
-
-                    <div class="recipe-actions">
-                        <form action="{% if recipe.recipeid in cookbook_recipes %}
-                                {{ url_for('routes.remove_from_cookbook_homeview', recipe_id=recipe.recipeid) }}
-                            {% else %}
-                                {{ url_for('routes.add_to_cookbook', recipe_id=recipe.recipeid) }}
-                            {% endif %}" method="post" style="display:inline;">
-                            <button type="submit">
-                                {% if recipe.recipeid in cookbook_recipes %}
-                                    Remove from Cookbook
+                        <div class="recipe-actions">
+                            <form action="{% if recipe.recipeid in cookbook_recipes %}
+                                    {{ url_for('routes.remove_from_cookbook_homeview', recipe_id=recipe.recipeid) }}
                                 {% else %}
-                                    Add to Cookbook
-                                {% endif %}
-                            </button>
-                        </form>
+                                    {{ url_for('routes.add_to_cookbook', recipe_id=recipe.recipeid) }}
+                                {% endif %}" method="post" style="display:inline;">
+                                <button type="submit">
+                                    {% if recipe.recipeid in cookbook_recipes %}
+                                        Remove from Cookbook
+                                    {% else %}
+                                        Add to Cookbook
+                                    {% endif %}
+                                </button>
+                            </form>
+                            <form action="{{ url_for('routes.delete_recipe', recipe_id=recipe.recipeid) }}" method="post" style="display:inline;">
+                                <button type="submit">Delete</button>
+                            </form>
+                            <form action="{{ url_for('routes.edit_recipe', recipe_id=recipe.recipeid) }}" method="get" style="display:inline;">
+                                <button type="submit">Edit</button>
+                            </form>
+                        </div>
                     </div>
-                </div>
-            {% endfor %}
-        {% else %}
-            <p>No public recipes from other users yet.</p>
-        {% endif %}
+                {% endfor %}
+            {% else %}
+                <p>You haven’t created any recipes yet.</p>
+            {% endif %}
+
+            <h3>Other Recipes</h3>
+            {% if other_recipes %}
+                {% for recipe in other_recipes %}
+                    <div class="recipe-card">
+                        <h4><a href="{{ url_for('routes.view_recipe', recipe_id=recipe.recipeid) }}">{{ recipe.title }}</a></h4>
+                        <p><strong>Ingredients:</strong> {{ recipe.ingredients }}</p>
+                        <p><strong>Instructions:</strong> {{ recipe.instructions }}</p>
+                        <p><strong>Privacy:</strong> {% if recipe.isprivate %}Private{% else %}Public{% endif %}</p>
+                        <p><strong>Publisher:</strong> {{ recipe.publisher }}</p>
+
+                        <div class="recipe-actions">
+                            <form action="{% if recipe.recipeid in cookbook_recipes %}
+                                    {{ url_for('routes.remove_from_cookbook_homeview', recipe_id=recipe.recipeid) }}
+                                {% else %}
+                                    {{ url_for('routes.add_to_cookbook', recipe_id=recipe.recipeid) }}
+                                {% endif %}" method="post" style="display:inline;">
+                                <button type="submit">
+                                    {% if recipe.recipeid in cookbook_recipes %}
+                                        Remove from Cookbook
+                                    {% else %}
+                                        Add to Cookbook
+                                    {% endif %}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No public recipes from other users yet.</p>
+            {% endif %}
     </div>
 </body>
 </html>
