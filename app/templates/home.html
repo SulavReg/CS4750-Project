@@ -164,7 +164,13 @@
                         <p><strong>Ingredients:</strong> {{ recipe.ingredients }}</p>
                         <p><strong>Instructions:</strong> {{ recipe.instructions }}</p>
                         <p><strong>Privacy:</strong> {% if recipe.isprivate %}Private{% else %}Public{% endif %}</p>
-                        <p><strong>Publisher:</strong> {{ recipe.publisher }}</p>
+                        <!--<p><strong>Publisher:</strong> {{ recipe.publisher }}</p> replaced with profile viewing option-->
+                        <p>
+                            <strong>Publisher:</strong> <!--added a button to view profile of publisher-->
+                            <a href="{{ url_for('routes.view_user_profile', username=recipe.publisher) }}">
+                                {{ recipe.publisher }}
+                            </a> 
+                        </p>
 
                         <div class="recipe-actions">
                             <form action="{% if recipe.recipeid in cookbook_recipes %}
