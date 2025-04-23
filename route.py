@@ -353,7 +353,9 @@ def view_friends(): #see ur friends list
     return render_template("view_friends.html", friends=friend_users)
 
 @routes.route("/user/<username>", methods=["GET", "POST"]) #view others + with edits to check friendship status
-def view_user_profile(username): 
+def view_user_profile(username):
+    if "username" in session and session["username"] == username:
+        return redirect(url_for("routes.view_my_profile"))
     user = User.query.filter_by(username=username).first()
     if not user:
         flash("User not found")
@@ -383,6 +385,26 @@ def view_my_profile(): #can view own friends list and cookbook, too
     cookbook_entries = Cookbook.query.filter_by(author = username).all()
     cookbook_recipe_ids =[entry.recipeid for entry in cookbook_entries]
     return render_template("my_profile.html", user=user,user_recipes=my_recipes, cookbook_recipes=cookbook_recipe_ids)
+
+
+@routes.route('/update_bio', methods=['POST'])
+def update_bio():
+    user_id = session.get('user_id')  # Retrieve user ID from session
+    if not user_id:
+        flash("You must be logged in to update your bio.", "error")
+        return redirect(url_for('routes.login'))  # or however you route to login
+
+    new_bio = request.form.get('bio')
+
+    user = User.query.get(user_id)
+    if user and new_bio is not None:
+        user.bio = new_bio
+        db.session.commit()
+        flash("Bio updated successfully!", "success")
+    else:
+        flash("Bio update failed.", "error")
+
+    return redirect(url_for('routes.my_profile'))
 
 @routes.route("/logout")
 def logout():

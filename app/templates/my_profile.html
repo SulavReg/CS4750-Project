@@ -119,6 +119,12 @@
             {% endif %}
         </div>
 
+        <h3>Edit Bio</h3>
+        <form action="{{ url_for('routes.update_bio') }}" method="post">
+            <textarea name="bio" rows="4" cols="60" placeholder="Write something about yourself...">{{ user.bio }}</textarea><br>
+            <button type="submit">Update Bio</button>
+        </form>
+
         
         <div class="recipe-actions">
             <!--view cookbook-->
