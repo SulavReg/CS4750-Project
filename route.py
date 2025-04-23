@@ -389,14 +389,14 @@ def view_my_profile(): #can view own friends list and cookbook, too
 
 @routes.route('/update_bio', methods=['POST'])
 def update_bio():
-    user_id = session.get('user_id')  # Retrieve user ID from session
-    if not user_id:
+    username = session.get('username')  # Retrieve user ID from session
+    if not username:
         flash("You must be logged in to update your bio.", "error")
         return redirect(url_for('routes.login'))  # or however you route to login
 
     new_bio = request.form.get('bio')
 
-    user = User.query.get(user_id)
+    user = User.query.get(username)
     if user and new_bio is not None:
         user.bio = new_bio
         db.session.commit()
@@ -404,7 +404,7 @@ def update_bio():
     else:
         flash("Bio update failed.", "error")
 
-    return redirect(url_for('routes.my_profile'))
+    return redirect(url_for('routes.view_my_profile'))
 
 @routes.route("/logout")
 def logout():
