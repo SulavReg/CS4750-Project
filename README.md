@@ -17,7 +17,7 @@ Run:
 + View the running site on your browser, using http://127.0.0.1:5000
 
 Group Members: 
-Elina Liu [bug4my]
-Sulav Regmi [yjb9kv]
-Megan Averyt [ehx5um]
-Peter Chu [aqe6cc]
++ Elina Liu [bug4my]
++ Sulav Regmi [yjb9kv]
++ Megan Averyt [ehx5um]
++ Peter Chu [aqe6cc]
